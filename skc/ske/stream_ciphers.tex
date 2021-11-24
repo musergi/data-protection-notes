@@ -1,0 +1,81 @@
+The goal of a stream cipher is to securely send a stream of information.
+Understanding a stream as a sequence of bits, bytes or larger words.
+As in all cryptography we assume that the channel used is insecure.
+In order to transmit some plaintext stream we encrypt it block by block to a cyphertext stream.
+This stream is then transmited over the channel.
+The receptor of this stream, performs the reverse operation of the ecryption operation.
+Doing so, it obtains the original plaintext.
+One important requirement of stream ciphers is that we can encrypt and decrypt \textbf{on-line}.
+On-line meanining that the reception of the entire message or ciphertext is not required to start the procedures.
+
+The most basic stream cipher is Vernam's cipher where the stream is combined with a pseudorandom stream of data.
+They are combined by using the boolean exclusive or (XOR) function (see Equation~\ref{eq:stream_encryption}).
+Ideally this pseudorandom stream of data would be a random number as long as the message.
+For practical reasons, this is impossible as we would need a key as long as all the messages we want to send.
+In the practical approach the key stream is generated (pseudorandom stream).
+It is created from a long term key $k$ and internal state $st$ and a transition function $F$.
+Equation~\ref{eq:key_stream_generation} shows how to combine them to obtain the key stream $r$.
+
+
+\begin{equation}
+c_n = m_n \oplus r_n
+\label{eq:stream_encryption}
+\end{equation}
+
+\begin{equation}
+(r_n, st_n) = F(st_{n-1}, k)
+\label{eq:key_stream_generation}
+\end{equation}
+
+A symmetric key encryption is called \textbf{synchronous} if the key stream can be generated independently from the message and cyphertext.
+This is the case for all stream ciphers based on Vernam's cipher.
+
+Due to the recursive nature of the key stream generation algorithm an base case or initial state $st_0$ has to be included.
+This initial state can be transmitted in plain text over the insecure channel, because the attacker does not have access to $k$.
+He therefore is not capable of generating subsecuent blocks of the key stream.
+An important property about this initial state is that it must be different between encryptions.
+If the same initial state is used the property in Equation~\ref{eq:nonce_repetition_keystream} holds.
+This would allow the attacker to forge a valid ciphertext.
+
+\begin{equation}
+m_n \oplus m_n' = c_n \oplus c_n'
+\label{eq:nonce_repetition_keystream}
+\end{equation}
+
+Regarding transmission error, a bit flip does not compromise the rest of the stream decryption.
+However, if the syncronization is lost between the sender and the receiver it causes a permanent decryption failure.
+This comes from the fact that if the internal states do not match the key stream will never match again.
+
+In Vernam based ciphers the security is based on the \textbf{unpredictability} of the key stream when the key is unknown.
+The algorithm is totally secure if the bits have the same probability and are independent of each other.
+
+An simple and \textbf{insecure} example of key stream is a linear feedback shift register (LFSR).
+A LFSR is a sequence of $m$ cells and a linear feedback function that pushes a new bit into the left cell.
+When a new bit is pushed, the rest of bits are pushed to the right.
+The right most bit is given a output to be used in the key stream.
+
+LFSR by themself are not secure as their linear nature makes them vulnerable to ciptoanalysis.
+They can be made more secure by implementing non-linear combinations, combining non-linearly the output of several registers or by using an irregular clock.
+This updated methods are used in application such as GSM or Bluetooth.
+
+In most applications more complex, non-linear ciphers are used to improve security.
+One really important example for cyptography history is RC4 as it was consifered insecure after the attack to WEP in 2001.
+The security flaw was mainly due to the key secheduling.
+
+RC4 is a byte based key stream generated with a simple finite state machine.
+It has several deviations from Equation~\ref{eq:key_stream_generation} as the function $F$ does not use the key.
+The $F$ function only uses the internal state (see Equation~\ref{eq:rc4_F})
+
+\begin{equation}
+(r_n, st_n) = F(st_{n-1})
+\label{eq:rc4_F}
+\end{equation}
+
+The key $k$ and a nonce are used to generate the intial state.
+For it a key expansion function $F_0$ is used.
+The key is expanded into an internal state of 2048 bits, representing a map $S$.
+
+\begin{equation}
+st_0 = F_0(k||nonce)
+\label{eq:rc4_F0}
+\end{equation}

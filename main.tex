@@ -1,0 +1,131 @@
+\documentclass[10pt]{article}
+\usepackage[USenglish]{babel}
+\usepackage[useregional]{datetime2}
+\usepackage{lipsum}
+\usepackage[outputdir=.]{minted}
+\DTMlangsetup[en-US]{showdayofmonth=false}
+
+\newcommand{\rfcId}{DPROT}
+\newcommand{\rfcTitle}{Notes}
+\newcommand{\rfcAuthor}{Sergi Mus}
+\newcommand{\rfcDate}{\today}
+\newcommand{\rfcInstitution}{UPC}
+
+% TABLE OF CONTENT
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsubsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\contentsname}{Table of Content}
+
+% MARGINS
+\usepackage{titlesec}
+\titlelabel{\thetitle.\quad}
+\usepackage{geometry} 
+\geometry{
+	a4paper,
+	left=30mm,
+	top=30mm,
+	bottom=30mm,
+	right=30mm
+}
+\setlength{\leftskip}{17pt}
+
+% HEADER AND FOOTER
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\fancyhead{}
+\fancyfoot{}
+\fancyhead[L]{\rfcId}
+\fancyhead[C]{\rfcTitle}
+\fancyhead[R]{\rfcDate}
+\fancyfoot[L]{\rfcAuthor} 
+\fancyfoot[C]{\rfcTitle} 
+\fancyfoot[R]{[Page \thepage] \\} 
+\renewcommand{\headrulewidth}{0pt} 
+\renewcommand{\footrulewidth}{0pt} 
+\setlength{\headheight}{13.6pt}
+
+% FIRST PAGE
+\usepackage{multicol}
+
+% FONT
+\usepackage{inconsolata}
+\renewcommand{\familydefault}{\ttdefault}
+
+\begin{document}
+
+\begin{multicols}{2}
+	\begin{flushleft}
+		Internet Engineering Task Force \\
+		DRAFT \rfcId
+	\end{flushleft}
+\columnbreak
+	\begin{flushright}
+		\rfcAuthor \\
+		\rfcInstitution \\
+		\rfcDate
+	\end{flushright}
+\end{multicols}
+
+\vspace{1in} { \center \rfcTitle \\ } \vspace{1in}
+
+\begin{abstract}
+  This document contains the notes for the subject of Data Protection. In it we study in depth cryptography both symetric and assymetric cryptography. 
+	\lipsum[1]
+\end{abstract}
+\pagebreak
+
+\tableofcontents
+\pagebreak
+
+\section{Symmetric Key Cryptography}{
+	\subsection{Symmetric Key Encryption}{
+    \subsubsection{Stream Ciphers}{
+      \input{skc/ske/stream_ciphers.tex}
+      \begin{minted}{python}
+        import test
+      \end{minted}
+%      \inputminted{python}{src/rc4-init.py}
+    }
+    \subsubsection{Block Ciphers}{
+    }
+    \subsubsection{Self-Synchronizing Stream Ciphers}{
+    }
+    \subsubsection{Plaintext Padding}{
+    }
+	}
+  \subsection{Message authentication}{
+  }
+  \subsection{Hash functions}{
+    \subsubsection{Random Oracle}{
+    }
+    \subsubsection{Practical Constructions}{
+    }
+    \subsubsection{Applications}{
+    }
+  }
+  \subsection{Authenticated Encyption}{
+    \subsubsection{Encrypt-then-MAC Generic Construction}{
+    }
+    \subsubsection{Particular Constructions}{
+    }
+  }
+}
+\pagebreak
+
+\section{Terminology}{
+	In this document, the key words "MUST", "MUST NOT", "REQUIRED",
+	"SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY",
+	and "OPTIONAL" are to be interpreted as described in BCP 14, RFC 2119   [RFC2119].
+	
+	\paragraph{stuff} Todo
+}
+\pagebreak
+
+\section{Overview}{
+	\lipsum[4]
+}
+
+\end{document}
