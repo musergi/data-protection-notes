@@ -1,16 +1,13 @@
-PAPER=paper.tex
+all: main.pdf
 
-all:
-	pdflatex main.tex
-	pdflatex main.tex
+view: main.pdf
+	xdg-open main.pdf &
 
-clean:
+main.pdf:
+	pdflatex -shell-escape main.tex
+	pdflatex -shell-escape main.tex
 	rm -f *.log *.toc *.aux *.pyg
 	rm -rf _minted-main
 
-watch:
-	while [ 1 ]; do;          \
-    sleep 1;            \
-    make all;              \
-    echo "\n----------\n"; \
-  done
+clean:
+	rm main.pdf
