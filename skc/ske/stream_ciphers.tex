@@ -76,6 +76,51 @@ For it a key expansion function $F_0$ is used.
 The key is expanded into an internal state of 2048 bits, representing a map $S$.
 
 \begin{equation}
-st_0 = F_0(k||nonce)
+st_0 = F_0(k)
 \label{eq:rc4_F0}
 \end{equation}
+
+The algorithm use for expanding the key is the presented in the following Python snippet.
+It then intialises with the index and then performs pseudorandom swaps.
+
+\inputminted{python}{src/rc4-init.py}
+
+The state update function just performs a swap with a non linear relationship and returns a byte at a random index. 
+It is shown in the following Python snippet.
+
+\inputminted{python}{src/rc4.py}
+
+On important issue with RC4 is that there is not a specification on how to add a nonce to the encryption.
+It is important in case we want to reuse the long term key.
+In poor implementations like WEP the nonce is prepended to the long term key.
+Making the inital part of the key stream predicatable once an attacker learns some pairs of cyphertext and plaintext.
+
+A widely used stream cipher nowadays is ChaCha.
+It is used by applications such as Google TLS, OpenSSH and the Linux /dev/urandom.
+
+The design of this stream cipher is completly different from RC4.
+It does not use a finite state machine and every key stream block can be computed independently of the others.
+A nonce $u$ (unique for each encrypted message) and a counter $i$ (unique for each block in the message) are used as inputs.
+This two values alongside the long term key $k$ are used to compute the key stream block $k_i$ (see Equation~\ref{eq:chacha}).
+
+\begin{equation}
+  k_i = F(k, u, i)
+  \label{eq:chacha}
+\end{equation}
+
+The key stream is computed in blocks of 512 bits, flow a long term key of 256 bits.
+Each block is initialized with a 128-bit constant, the long term key, a 64-bit sequential block and a 64-bit nonce.
+Then in the algorithm, the block contents is suffled with a function.
+
+Previously we have described some cryptosytems as being secure or not but no formal definition was given.
+We define the level of security of a cryptosystem by the type of attacks it can resist.
+Defining an attack means giving the attacker a goal and some ressources.
+
+The most simple attack defined this ways is recovering the key with the description of the cipher and som cipertexts of unknown plaintexts.
+The attacker is considered succesful if it correctly guesses the long term key.
+Another attacker goals could be predicting portions of the key, learning som partial information of a plaintext or letting the recipient accept a corrupted message as valid.
+
+In practical scenarios the attacker can have additional resource, like lerning some pairs of his chosing or not.
+He can also have access to other sources like data of the communication channel, timing information or power consuption.
+The attacker can also just evesdrop the communication or even modify it.
+Also limitations on the computational power and attack time are also considered in the attack models.
