@@ -1,0 +1,6 @@
+Block ciphers used in OFB or CTR modes are actually synchronous block-oriented stream ciphers.
+In them the encrypted symbols are not single bits but blocks.
+
+\textbf{Self-synchronizing} stream ciphers solve the desynchronization problem.
+They alow recovering the normal decryption operation after receiving a number of correct cipher stream consecutive symbols after the wrong onces.
+A block cipher operating in CBC or CFB mode can recover from transmission errors after receiving two correct cipher blocks.
