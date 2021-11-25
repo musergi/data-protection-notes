@@ -1,0 +1,238 @@
+The basis behind block ciphers is that the length of plaintexts, ciphertexts and keys is fixed in advance.
+As the input and output are fixed, the encryption can be defined as a function.
+This function maps the key and message space to the ciphertext space (see Equation~\ref{eq:ske_block_enc_space}).
+In the same way, decription maps the key and cipher space to the message space (see Equation~\ref{eq:ske_block_dec_space}).
+This only holds as long as the encryption is deterministic, which is most of the cases.
+
+\begin{equation}
+  E:K \times M \rightarrow C
+\label{eq:ske_block_enc_space}
+\end{equation}
+
+\begin{equation}
+  D:K \times C \rightarrow M
+\label{eq:ske_block_dec_space}
+\end{equation}
+
+In order to simplify notation the following notation simplifications will be taken into account.
+In it the key is added as a subindex to remove it from the argument list.
+
+\begin{equation*}
+  E_k(m)=E(k, m)
+\end{equation*}
+
+\begin{equation*}
+  D_k(m)=D(k, m)
+\end{equation*}
+
+$E_k$ must be an injective map meaning that two inputs can not be mapped to the same output.
+If it is not the case a ciphertext can be decrypted to two different plaintexts causing problems in decryption.
+Therefore a block cipher can be understood as a collection of injective maps indexed by the secret key.
+In an ideal cipher this set of map is the full set of injective maps from M to C.
+This ideal cipher is totally impractical but it is still useful as an idealized model of a block cipher.
+
+In practical cippher the map $E_k$ behaves like a random injective map.
+Normally the designs are iterative, a series of operations are defined and repeated several times.
+This ciphers must follow to important properties.
+The first one is \textbf{confusion} where every bit in the cipher must depend on several bits of the key.
+The second one is \textbf{diffusion} where flipping a single plaintext bit must change half of the ciphertext bits.
+For every iteration or round, we use a different subkey obtained from the main key in the \textbf{key scheuling} procedure.
+A round combines different permutation and substitution operations.
+
+DES only now considered insecure by it short key length is an example of block cipher.
+It uses a key length of 56-bits with a round subkey of 48-bits.
+Each block has a size of 64-bits and is passed through 16 rounds.
+
+The rounds used by DES are based on Feistel networks.
+This rounds first split the input message into the left part and right part (see Equation~\ref{eq:feistel0}).
+It then obtains the next block by permutating both blocks and xoring the right side combined with key trough $F$ (see Equation~\ref{eq:feistel1}).
+Finally, the ciphertext is the output of the 16th round (see Equation~\ref{eq:feistel2}).
+
+
+\begin{equation}
+  (L_0, R_0) = m
+\label{eq:feistel0}
+\end{equation}
+
+\begin{equation}
+  (L_{n+1}, R_{n+1}) = (R_n, L_n \oplus F(k_n, R_n))
+\label{eq:feistel1}
+\end{equation}
+
+\begin{equation}
+  c = (R_{16}, L_{16})
+\label{eq:feistel2}
+\end{equation}
+
+The $k$ with subindex are the different round subkeys obtained from the original key.
+If we perform the same procedure reversing the subkey order we obtain the decryption function.
+
+An important step for this network to be successful is the function $F$.
+This function first expands the half block from 32-bits to 48-bits and xors it with the round subkey.
+It is then divided into 8 6-bit pieces and each one replaced by a 4-bit word using the correesponding substitution table.
+The 8 4-bit words are glued together into the 32-bit half block.
+Finally we apply the permutation P to the 32 bits.
+
+DES is considered insecure because the key only contains 56-bits, which means it can be bruteforced by an attacker.
+Triple DES (or 3DES) allows using longer keys and is still considered secure.
+In triple DES the middle encryption is in reallity a decryption for back compatibility reasons.
+If the 3 keys are the same in triple DES it is equivalent to regular DES.
+
+AES is widely used nowadays in applications like TLS, SSL, disk encryption, compression tools and Signal.
+It uses a key length of 128, 192 or 256 bits with a round subkey of 128 bits.
+The block length used in AES is 128-bits and the number of rounds depends on the key size (10, 12 or 14).
+
+A round of AES arranges the block as a 4 by 4 matrix of bytes.
+Each byte in the block is replaced by another according to a substitution box S.
+The i-th row is rotated i position to the left breaking the colomn struture of the matrix.
+A $F_{2^8}$ linear map is applied to the matrix columns as a multiplication be a particular polynomial.
+Each row is interpreted as a polynomial in a way that each byte is the coeficient of the polynomial.
+The resulting block is xored with the round subkey.
+
+The key addition is performed before starting the first round, and the las round does not mix the columns.
+All the steps are invertible and their inverses are used during decryption.
+
+With the descryption of blocks ciphers and their real world example we can see that encrypting only 128-bits can be very limiting.
+Furthermore, the encryption is deterministic, the same message sent twice has the same ciphertext.
+For this reasons, block cipher are intended to be used in specific \textbf{mode of operation}.
+This modes of operation specify how to deal with messages longer than one block and randomization.
+
+The \textbf{Electronic Code Book} (ECB) is the simplest way to encrypt messages of arbitrary length, but it is completly insecure.
+They simple split the data into blocks and each block is encrypted sparately with the same key (see Equation~\ref{eq:ecb}).
+
+\begin{equation}
+  c_i = E_k(m_i)
+  \label{eq:ecb}
+\end{equation}
+
+The main problem is that the equality of two plaintext blocks in the sequence implied the equality of the corresponding ciphertext blocks.
+In the case of network packets, if two packets share the same header, their headers will share cipher blocks.
+There is a semantic leakage and a lack of randomization.
+A classical example is that encrypting an image will yield the same image but with different colored squares.
+
+The \textbf{Cipher Block Chaining} Mode (CBC) uses an initialization value (IV).
+It allows that two encyptions of the same message with the same key provide different ciphertexts.
+This initializaton value must not be reused, because it then defeats the purpose.
+A value that is only use once is refered to as a \textbf{nonce}.
+
+The encryption is performed as specified in Equation~\ref{eq:cbc_enc}.
+Each block encrypt the message xored with the previous encryted block.
+For the first block, it is xored with the encrypted IV.
+
+\begin{equation}
+  c_i = E_k(c_{i-1} \oplus m_i)
+  \label{eq:cbc_enc}
+\end{equation}
+
+\begin{equation}
+  c_0 = E_k(IV)
+  \label{eq:cbc_iv}
+\end{equation}
+
+As for the decryption operation, it simple inverts the order of the operations.
+It first decrypts and then xors with the previous ciphertext (see Equation~\ref{eq:cbc_dec}).
+
+\begin{equation}
+  m_i = D_k(c_i) \oplus c_{i-1}
+  \label{eq:cbc_dec}
+\end{equation}
+
+If there is an error during transmission for $c_i$, it would only affect to the decryption of two consecutive messages.
+The error would affect $m_i$ and also would affect $m_{i+1}$ as it uses $c_i$ for decryption.
+Due to the nature of encryption it is not parallelizable, but for the same reason than previously decryption is.
+This is due to the fact that only the previous ciphertext is required, not the entire chain or other plaintext.
+
+The blocksize of the block cipher used in CBC mode must be large enough to minimize the probability of collision.
+It must avoid that two ciphertext bloocks are equal.
+If we have a collision (see Equation~\ref{eq:cbc_col}), then Equation~\ref{eq:cbc_col_aenc} holds true.
+As encryption is injective, if they are equal after encryption they must be before (see Equation~\ref{eq:cbc_col_benc}).
+By using properties of the xor operation we can obtain the result in Equation~\ref{eq:cbc_col_res}.
+This is clearly a vulnerability, for this reason collision must be highly improbable.
+
+\begin{equation}
+  c_i = c_j
+  \label{eq:cbc_col}
+\end{equation}
+
+\begin{equation}
+  E_k(c_{i-1} \oplus m_i)  = E_k(c_{j-1} \oplus m_j)
+  \label{eq:cbc_col_aenc}
+\end{equation}
+
+\begin{equation}
+  c_{i-1} \oplus m_i  = c_{j-1} \oplus m_j
+  \label{eq:cbc_col_benc}
+\end{equation}
+
+\begin{equation}
+  m_i \oplus m_j = c_{i-1} \oplus c_{j-1}
+  \label{eq:cbc_col_res}
+\end{equation}
+
+The \textbf{Cipher Feedback} Mode (CFB) has some similarities with CBC but has a main advantage over it.
+It only uses the encryption function of the block cipher, we can use block ciphers without decryption function.
+In order to encypt it xors the rencryption of the previous ciphertext with the message (see Equation~\ref{cfb_enc}).
+
+\begin{equation}
+  c_i = E_k(c_{i-1}) \oplus m_i
+  \label{eq:cfb_enc}
+\end{equation}
+
+As for decryption, the operation is identical to encryption but prociding the ciphertext instead of plaintext.
+
+\begin{equation}
+  m_i = E_k(c_{i-1}) \oplus c_i
+  \label{eq:cfb_enc}
+\end{equation}
+
+If two ciphertext blocks collide a similar problem as for CBC apears where properties of plaintexts is leaked.
+For this reason, collition resistance in the block cipher is a requirement for using CFB Mode.
+
+The \textbf{Output Feedback} (OFB) Mode works as a synchronous stream cipher.
+It uses an IV and a the secret key to generate a long pseudorandom sequence (see Equations~\ref{eq:ofb_keystream_init}~and~\ref{eq:ofb_keystream}).
+This long sequence is the xored with the message stream (see Equation~\ref{eq:ofb_enc}).
+Like in CFB Mode only the encryption module is required as the operations for encryption and decription are identical (see Equation~\ref{eq:ofb_dec}).
+
+\begin{equation}
+  r_i = E_k(r_{i-1})
+  \label{eq:ofb_keystream}
+\end{equation}
+
+\begin{equation}
+  r_0 = IV
+  \label{eq:ofb_keystream_init}
+\end{equation}
+
+\begin{equation}
+  c_i = r_i \oplus m_i
+  \label{eq:ofb_enc}
+\end{equation}
+
+\begin{equation}
+  m_i = r_i \oplus c_i
+  \label{eq:ofb_dec}
+\end{equation}
+
+Transmission errors do not propagate, if the IV is correctly transmitted. A corrupted IV causes decryption errors in all blocks.
+
+The \textbf{Counter} Mode (CTR) is similar to OFB but with an easier to produce sequence of blocks, depending on the stream.
+The operation between the IV and index usually is concatenation but xor can also be done (see Equation~\ref{eq:ofb_keystream}).
+The encryption (Equation~\ref{eq:ofb_enc}) and decryption (Equation~\ref{eq:ofb_dec}) are simply a stream cipher.
+
+\begin{equation}
+  s_i = IV || i
+  \label{eq:ofb_keystream}
+\end{equation}
+
+\begin{equation}
+  c_i = E_k(s_i) \oplus m_i
+  \label{eq:ofb_enc}
+\end{equation}
+
+\begin{equation}
+  m_i = E_k(s_i) \oplus c_i
+  \label{eq:ofb_dec}
+\end{equation}
+
+Bothe encryption and decryption of blocks can be done independently, and therefore, both procedures are fully parallelizable.
+As in OFB, only IV transmission failure causes failure in all the blocks.
