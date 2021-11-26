@@ -1,0 +1,11 @@
+A block cipher is a natural construction for combining all the bits of a message with a (short) secret key.
+They are combined in such a way that the key is not exposed, even if some pairs are revealed to the attacker.
+Therefore, some MAC schemes are based on block ciphers operating in chaining modes like CBC.
+
+A characteristic of the MAC that can be exploited is that MAC is only for integrity not messagbe recovery.
+Meaning that the MAC output can be a lossful transformation, allowing for the tag to be shorter than the message.
+Usually if a block cipher is used, the MAC has the size of a single block.
+
+In 1989, \textbf{CBC-MAC} was created.
+It consists in taking the last block of encryption of the message operating in CBC mode and with a zero initial IV.
+CBC-MAC is proven secure for messages with a fixed length that is an exact multiple of the block length.
