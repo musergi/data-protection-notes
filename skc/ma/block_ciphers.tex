@@ -9,3 +9,31 @@ Usually if a block cipher is used, the MAC has the size of a single block.
 In 1989, \textbf{CBC-MAC} was created.
 It consists in taking the last block of encryption of the message operating in CBC mode and with a zero initial IV.
 CBC-MAC is proven secure for messages with a fixed length that is an exact multiple of the block length.
+
+A successful attack against CBC-MAC for a given block cipher, implies there exists also a successful attack against the block cipher.
+In order to prove this statement a formal description of both attack models is required.
+For CBC-MAC, the attack chooses two messages og the same length and asks for the MAC of one of them.
+The attacker wins if it correctly guesses which message has been used to compute the MAC.
+For the block cipher, the attackers asks for encyption of as many blocks as it wants.
+Then it eirher receives the encrypted blocks or just random elements.
+The attacker succeeds if it correctly huesses whether it is receiving real encryption or random elements.
+This proof requires a minimum block length in roder to ensure a low collision probability of ciphertexts.
+
+CBC-MAC is proven to be insecure if applied to messages of arbitrary lengths.
+Proof in the laboratory exercises.
+
+The \textbf{One-Key MAC} (2003) is a modification of CBC-MAC to make it secure for messages of variable length.
+In OMAC, the last block in the message is padded if necessary with the previously introduced padding scheme.
+It then is tweaked with extra keys (Equation~\ref{eq:ok_mac_end}) before performing the last encryption operation in CBC-MAC.
+In Equation~\ref{eq:ok_mac_end} $m'_n$ represents the padded block and $k'$ the subkey obtained from $k$.
+This subkey varies depending on whether the last block has been padded or not.
+
+\begin{equation}
+  c_i = E_k(c_{i-1} \oplus m_i)
+  \label{eq:ok_mac_base}
+\end{equation}
+
+\begin{equation}
+  c_n = E_k(c_{i-1} \oplus m'_n \oplus k')
+  \label{eq:ok_mac_end}
+\end{equation}
