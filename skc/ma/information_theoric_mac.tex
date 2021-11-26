@@ -1,0 +1,29 @@
+If we define the following MAC scheme.
+
+\begin{equation*}
+  k = (a, b)
+\end{equation*}
+
+\begin{equation*}
+  MAC(k, m) = am + b
+\end{equation*}
+
+\begin{equation*}
+  Ver(k, m, t): am + b = t?
+\end{equation*}
+
+If we limit the attacker to knowing at most one valid pair, even if the message is of his choosing we can prove that the probability of a valid forgery is $1/q$.
+Indeed, valid pairs are points on a line in the plane. Therefore, guessing another point in the line is essentially guessing the slope $a$.
+
+The MAC is called \textbf{information theoretically secure} because the probability $1/q$ is the same as the success probability of a brute-force attack guessing the tag from scratch.
+However, if the attacker knows two different valid pairs then it can launch a successful key recovery attack.
+For this reason, it is known as a one-time information theoric MAC.
+
+This idea can be extended to a n-times information theoric MAC.
+We simply exten the degree of the polynomial from 1 to n.
+Then the attacker can know at most n valid pairs before performing a key recovery attack.
+
+This scheme is not practical for several reasons.
+Firstly, it requires a key n times as long as the message.
+Additionally, the tag is as long as the message.
+Practical MACs are more efficient than this one.

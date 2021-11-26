@@ -1,0 +1,52 @@
+Configentialy is not the only security property of a communication system that must be guaranteed.
+An attacker coyuld try to modify the content of a message without being detected.
+He could even try to convice the recipient that the corrupted message was created by the sender.
+\textbf{Data integrity} is the property that the recipient of a message can detect (with high probability) tampering.
+Understanding as tampering, any manipulation during the transmission of the message.
+
+A commonly used way to ensure integrity to a message is appending a \textbf{message authentication code} (MAC) to it.
+
+In a MAC scheme a long term secret key $k$ is shared between a sender and a recipient.
+This key is used in two operations, the first being generating the tag or MAC.
+The second is the verification with a given pair message and tag that the message is not modified.
+Both oprations must follow Equation~\ref{eq:mac_prot} in order to ensure correctness.
+
+\begin{equation}
+  Ver(k, m, MAC(k, m)) = 1
+  \label{eq:mac_prop}
+\end{equation}
+
+The authentication procedure starts with the sneder generating a tag $t$ (see Equation~\ref{eq:mac_gen}).
+The sender then sends to the recipient the pair $(m, t)$ through an insecure channel.
+The recipient receives a pair $(m', t')$ that can be different from the sent pair.
+The recipient can then check the integrity by using the comparison in Equation~\ref{eq:mac_ver}.
+
+\begin{equation}
+  t = MAC(k, m)
+  \label{eq:mac_gen}
+\end{equation}
+
+\begin{equation}
+  Ver(k, m) ?= 1
+  \label{eq:mac_ver}
+\end{equation}
+
+MAC could be a probabilistic algorith, meaning there would be several valid tags for a given message and key.
+However, normally it is deterministic and the verification function just recalculates the tag and compares it with the received.
+In this case, correctness is trivial.
+
+A MAC system is secure if an attacker is unable to forge a valid pair of message and tag.
+But, like in cryptography, different attack scenarios can be defined, giving several ressources and goals to the attacker.
+
+In the simplest case the attacker knows the algorithm and some valid pairs from messages recorded.
+The attacker wins if he is able to recover the key.
+Other goals could be \textbf{universal forgery}, the attacker can forge a valid tag for any message without the key.
+Another could be \textbf{existential forgery}, the attacker can forge a tag for a particular message chosen by him.
+This message is not within the known message and tag pairs.
+The ressources for this attack can be some valid pairs for messages chosen by the attacker or not.
+
+A correct label attached to a message not only gives the guarantees that the massage has not been modified.
+It also ensure that the sender computed the tag, as he is the only one other than the recipient knowing the key.
+
+Perfect schemes don't exist as with enough message and tag pairs most are broken.
+For this reason, in security proofs we limit the amount of pairs available.
