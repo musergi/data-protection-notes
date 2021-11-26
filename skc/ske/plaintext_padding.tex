@@ -1,0 +1,10 @@
+In practical application the plaintext length is not an exact multiple of the block size of a block cipher.
+For this reason, it is necessary to add the missing bits to complete the last block.
+The proces of adding this missing bits is called padding.
+
+Padding must be done in a way that no ambiguity is introduced.
+Adding zeros after the message would not be enough unless we assume the last bit of the message to be one.
+A simple padding scheme is appending a 1-bit and zero or more 0-bits.
+For a message that exactly matches the block size we must add an extra block with just padding.
+This is a common pattern amongst padding schemes.
+During decryption we must search for the last bit with 1 and delete everything from there forwards.
