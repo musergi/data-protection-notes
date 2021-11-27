@@ -1,0 +1,26 @@
+A \textbf{hash function} is a deterministic and efficient computable function.
+It maps binary strings of arbitrary length to binary strings of a fixed length m (or to elements in a finite set).
+It must behave like a random function.
+
+It is impossible for any deterministic function to behave exactly as a random function.
+For this reason a set of requirements are set forward for hash functions.
+In order for a hash function to be considered cryptographically secure it has to have at least the following properties.
+
+Firstly, it must have \textbf{preimage resistance}.
+Given a random element of the output set, it is infeasable to compute the anti-image.
+Given a random $y$ it is infeasable to compute $x$ such that $H(x) = y$.
+
+Secondly, it must have \textbf{second preimage resistance}.
+Given a random element, it is infeasable to find another different from the original with the same image.
+Given a random $x$, it is infeasable to find $x' \neq x$ such that $H(x') = H(x)$.
+
+Thirdly, it must have \textbf{collision resistance}.
+It is infeasible to find a pair $(x, x')$ such that $H(x') = H(x)$.
+Of course, with the pair following the property $x \neq x'$.
+
+In a random function, the images are independent random variables, with uniform distribution.
+Therefore, one expects to compute $2^m$ hashes to hit a given image (where $m$ is the length of the hash).
+In this case there is no diference with the first and second preimage resistance.
+To find a collision in average $2^{m/2}$ operations must be performed.
+
+Therefore, any cryptographic hash function will use a value of $m$ large enough so that computing $2^{m/2}$ is infeasable.
